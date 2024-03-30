@@ -1,0 +1,46 @@
+version: '3'
+
+tasks:
+  default:
+    - task: build
+  clean:
+    desc: "cleans the project."
+    cmds:
+      - go clean .
+      - rm -f coverage.html coverage.out
+  fmt:
+    desc: "formats the source code."
+    cmds:
+      - task: clean
+      - go fmt ./...
+  vet:
+    desc: "runs go vet on the source code."
+    cmds:
+      - task: fmt
+      - go vet ./...
+  test:
+    desc: "tests the application. Starts the database before and afterwards."
+    cmds:
+      - task: vet
+      - task: docker-up
+      - defer: { task: docker-down }
+      - go test -v -coverprofile coverage.out ./... && go tool cover -html coverage.out -o coverage.html
+  build:
+    desc: "builds the application."
+    cmds:
+      - task: test
+      - go build main.go
+  run:
+    desc: "runs the application."
+    cmds:
+      - task: docker-up
+      - defer: { task: docker-down }
+      - go run main.go
+  docker-up:
+    desc: "starts the docker container."
+    cmds:
+      - docker compose up -d --wait
+  docker-down:
+    desc: "shuts down the docker container"
+    cmds:
+      - docker compose down

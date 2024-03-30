@@ -1,0 +1,12 @@
+# Binaries
+main
+
+# IntelliJ / Goland
+.idea/**
+
+# Mac
+.DS_Store
+
+# Test coverage reports
+coverage.html
+coverage.out

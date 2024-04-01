@@ -1,7 +1,7 @@
-package configuration
+package config
 
 import (
-	config "github.com/andrewapj/dotenvconfig"
+	"github.com/andrewapj/dotenvconfig"
 	"io/fs"
 	"os"
 	"time"
@@ -11,15 +11,15 @@ const (
 	defaultConfigPath = "local.env"
 )
 
-// Load loads the configuration for the application.
+// Load loads the config for the application.
 func Load(fSys fs.FS) {
 
-	path, ok := os.LookupEnv(ConfigPathKey)
+	path, ok := os.LookupEnv(ConfigPathKey())
 	if !ok {
 		path = defaultConfigPath
 	}
 
-	err := config.Load(fSys, path, config.Options{
+	err := dotenvconfig.Load(fSys, path, dotenvconfig.Options{
 		JsonLogging:    true,
 		LoggingEnabled: true,
 	})

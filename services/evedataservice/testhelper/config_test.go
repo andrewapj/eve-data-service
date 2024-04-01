@@ -1,21 +1,20 @@
 package testhelper
 
 import (
-	"github.com/andrewapj/arcturus/configuration"
+	"github.com/andrewapj/arcturus/config"
 	"github.com/stretchr/testify/require"
-	"os"
 	"testing"
 )
 
-func TestSetTestConfig(t *testing.T) {
+func Test_SetTestConfig(t *testing.T) {
 
 	SetTestConfig()
 
-	v := os.Getenv(configuration.LogLevel)
+	v := config.LogLevel()
 	require.NotEmpty(t, v, "expected key was empty")
 }
 
-func TestGetRootDir(t *testing.T) {
+func Test_GetRootDir(t *testing.T) {
 
 	dir, err := GetRootDir()
 	require.Nil(t, err, "unexpected error")

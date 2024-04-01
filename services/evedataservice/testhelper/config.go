@@ -2,7 +2,7 @@ package testhelper
 
 import (
 	"fmt"
-	"github.com/andrewapj/arcturus/configuration"
+	"github.com/andrewapj/arcturus/config"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,25 +10,25 @@ import (
 
 const testConfigFile = "local-test.env"
 
-// SetTestConfig sets the configuration for tests.
+// SetTestConfig sets the config for tests.
 func SetTestConfig() {
 	dir, err := GetRootDir()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	err = os.Setenv(configuration.ConfigPathKey, testConfigFile)
+	err = os.Setenv(config.ConfigPathKey(), testConfigFile)
 	if err != nil {
 		panic(err.Error())
 	}
-	configuration.Load(os.DirFS(dir))
+	config.Load(os.DirFS(dir))
 
 	// Ensure the application runs in UTC
 	time.Local = time.UTC
 }
 
 // GetRootDir finds the root application path where 'main.go' is located.
-// This allows tests run in an IDE to find the configuration files.
+// This allows tests run in an IDE to find the config files.
 func GetRootDir() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {

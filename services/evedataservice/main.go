@@ -2,7 +2,7 @@ package main
 
 import (
 	"embed"
-	"github.com/andrewapj/arcturus/configuration"
+	"github.com/andrewapj/arcturus/config"
 	"github.com/andrewapj/arcturus/log"
 	"log/slog"
 	"os"
@@ -13,7 +13,7 @@ var configFS embed.FS
 
 func main() {
 
-	configuration.Load(configFS)
+	config.Load(configFS)
 	log.Configure()
 
 	slog.Info("application started", "pid", os.Getpid())

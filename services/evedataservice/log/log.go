@@ -1,8 +1,7 @@
 package log
 
 import (
-	"github.com/andrewapj/arcturus/configuration"
-	config "github.com/andrewapj/dotenvconfig"
+	"github.com/andrewapj/arcturus/config"
 	"log/slog"
 	"os"
 	"strings"
@@ -11,11 +10,7 @@ import (
 // Configure configures slog to use json logging and the given logging level.
 func Configure() {
 
-	level, err := config.GetKey(configuration.LogLevel)
-	if err != nil {
-		level = ""
-	}
-	level = strings.ToLower(level)
+	level := strings.ToLower(config.LogLevel())
 
 	var slogLevel slog.Level
 	if level == "debug" {

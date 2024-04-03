@@ -11,41 +11,41 @@ import (
 )
 
 type response struct {
-	body       []byte
-	expires    time.Time
-	pages      int
-	statusCode int
+	body          []byte
+	contentLength int
+	expires       time.Time
+	pages         int
+	statusCode    int
 }
 
 // newResponse builds a new response.
 func newResponse(resp *http.Response) (*response, error) {
+
+	contentLength, err := strconv.Atoi(resp.Header.Get(config.EsiHeaderContentLength()))
+	if err != nil {
+		contentLength = 0
+	}
+
+	expires := resp.Header.Get(config.EsiHeaderExpiresKey())
+
+	pages, err := strconv.Atoi(resp.Header.Get(config.EsiHeaderPagesKey()))
+	if err != nil {
+		pages = 1
+	}
 
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return &response{}, fmt.Errorf("unable to build response. %w", err)
 	}
 
-	expires := ""
-	if len(resp.Header[config.EsiHeaderExpiresKey()]) == 1 {
-		expires = resp.Header[config.EsiHeaderExpiresKey()][0]
-	}
-
-	pages := "1"
-	if len(resp.Header[config.EsiHeaderPagesKey()]) == 1 && resp.Header[config.EsiHeaderPagesKey()][0] != "" {
-		pages = resp.Header[config.EsiHeaderPagesKey()][0]
-	}
-	pagesInt, err := strconv.Atoi(pages)
-	if err != nil {
-		return &response{}, fmt.Errorf("unable to build response with invalid pages. %w", err)
-	}
-
 	return &response{
-		body: bytes,
+		body:          bytes,
+		contentLength: contentLength,
 		expires: clock.ParseWithDefault(
 			config.EsiDateLayout(),
 			expires,
 			clock.GetTime().Add(time.Duration(config.EsiDateAdditionalTime())*time.Second)),
-		pages:      pagesInt,
+		pages:      pages,
 		statusCode: resp.StatusCode,
 	}, nil
 }

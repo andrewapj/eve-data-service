@@ -7,11 +7,7 @@ func ConfigPathKey() string {
 }
 
 func LogLevel() string {
-	v, err := dotenvconfig.GetKey("LOG_LEVEL")
-	if err != nil {
-		return ""
-	}
-	return v
+	return dotenvconfig.GetKeyMust("LOG_LEVEL")
 }
 
 func EsiConcurrency() int {
@@ -32,6 +28,10 @@ func EsiDateLayout() string {
 
 func EsiDomain() string {
 	return dotenvconfig.GetKeyMust("ESI_DOMAIN")
+}
+
+func EsiHeaderContentLength() string {
+	return dotenvconfig.GetKeyMust("ESI_HEADER_CONTENT_LENGTH_KEY")
 }
 
 func EsiHeaderExpiresKey() string {

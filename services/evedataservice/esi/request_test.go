@@ -37,7 +37,7 @@ func Test_makeUrl_WithEmptyPage(t *testing.T) {
 		map[string]string{"param1": "value1", "param2": "value2"}, 0)
 
 	actual := r.makeUrl()
-	expected := "http://localhost/path/value1/path2/value2/?datasource=tranquility&language=en"
+	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en"
 
 	assert.Equal(t, expected, actual)
 }
@@ -50,7 +50,7 @@ func Test_makeUrl_WithPage(t *testing.T) {
 		map[string]string{"param1": "value1", "param2": "value2"}, 1)
 
 	actual := r.makeUrl()
-	expected := "http://localhost/path/value1/path2/value2/?datasource=tranquility&language=en&page=1"
+	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en&page=1"
 
 	assert.Equal(t, expected, actual)
 }

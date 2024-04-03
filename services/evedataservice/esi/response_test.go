@@ -25,7 +25,7 @@ func Test_newResponse(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func Test_newResponse_FutureExpiresWithMissingExpiresHeader(t *testing.T) {
+func Test_newResponse_DefaultsSetWithMissingHeaders(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
@@ -34,48 +34,31 @@ func Test_newResponse_FutureExpiresWithMissingExpiresHeader(t *testing.T) {
 
 	actual, err := newResponse(httpResponse)
 	require.Nil(t, err)
+
+	assert.Equal(t, 0, actual.contentLength)
 
 	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
-}
-
-func Test_newResponse_FutureExpiresWithEmptyExpiresHeader(t *testing.T) {
-
-	testhelper.SetTestConfig()
-
-	httpResponse := buildTestHttpResponse()
-	httpResponse.Header[config.EsiHeaderExpiresKey()] = []string{""}
-
-	actual, err := newResponse(httpResponse)
-	require.Nil(t, err)
-
-	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second).Truncate(time.Second)
-	assert.Greater(t, defaultFutureTime, clock.GetTime())
-}
-
-func Test_newResponse_DefaultsToPage1WithMissingPageHeader(t *testing.T) {
-
-	testhelper.SetTestConfig()
-
-	httpResponse := buildTestHttpResponse()
-	httpResponse.Header = map[string][]string{}
-
-	actual, err := newResponse(httpResponse)
-	require.Nil(t, err)
-
 	assert.Equal(t, 1, actual.pages)
 }
 
-func Test_newResponse_DefaultsToPage1WithEmptyPageHeader(t *testing.T) {
+func Test_newResponse_DefaultsSetWithEmptyHeaders(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
 	httpResponse := buildTestHttpResponse()
+	httpResponse.Header[config.EsiHeaderContentLength()] = []string{""}
+	httpResponse.Header[config.EsiHeaderExpiresKey()] = []string{""}
 	httpResponse.Header[config.EsiHeaderPagesKey()] = []string{""}
 
 	actual, err := newResponse(httpResponse)
 	require.Nil(t, err)
+
+	assert.Equal(t, 0, actual.contentLength)
+
+	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
+	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
 	assert.Equal(t, 1, actual.pages)
 }
@@ -88,10 +71,11 @@ func buildTestResponse(t *testing.T) *response {
 	}
 
 	return &response{
-		body:       []byte("{}"),
-		expires:    date,
-		pages:      1,
-		statusCode: 200,
+		body:          []byte("{}"),
+		contentLength: 2,
+		expires:       date,
+		pages:         5,
+		statusCode:    200,
 	}
 }
 
@@ -99,12 +83,13 @@ func buildTestHttpResponse() *http.Response {
 
 	return &http.Response{
 		StatusCode: 200,
-		Proto:      "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
+		Proto:      "HTTP/2.0",
+		ProtoMajor: 2,
+		ProtoMinor: 0,
 		Header: map[string][]string{
-			config.EsiHeaderExpiresKey(): {"Sun, 31 Mar 2024 11:05:00 GMT"},
-			config.EsiHeaderPagesKey():   {"1"},
+			config.EsiHeaderExpiresKey():    {"Sun, 31 Mar 2024 11:05:00 GMT"},
+			config.EsiHeaderPagesKey():      {"5"},
+			config.EsiHeaderContentLength(): {"2"},
 		},
 		Body: io.NopCloser(bytes.NewReader([]byte("{}"))),
 	}

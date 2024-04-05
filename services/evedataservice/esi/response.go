@@ -1,6 +1,7 @@
 package esi
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/andrewapj/arcturus/clock"
 	"github.com/andrewapj/arcturus/config"
@@ -33,13 +34,14 @@ func newResponse(resp *http.Response) (*response, error) {
 		pages = 1
 	}
 
-	bytes, err := io.ReadAll(resp.Body)
+	buff := new(bytes.Buffer)
+	_, err = io.Copy(buff, resp.Body)
 	if err != nil {
 		return &response{}, fmt.Errorf("unable to build response. %w", err)
 	}
 
 	return &response{
-		body:          bytes,
+		body:          buff.Bytes(),
 		contentLength: contentLength,
 		expires: clock.ParseWithDefault(
 			config.EsiDateLayout(),

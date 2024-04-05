@@ -46,7 +46,7 @@ func newRequest(path string, pathParams map[string]string, page int) request {
 }
 
 // makeUrl generates a full URL from a request.
-func (r *request) makeUrl() string {
+func (r request) makeUrl() string {
 
 	url := fmt.Sprintf("%s://%s%s?datasource=%s&language=%s",
 		r.protocol, r.domain, r.path, r.datasource, r.language)
@@ -62,7 +62,7 @@ func (r *request) makeUrl() string {
 	return url
 }
 
-func (r *request) toHttpRequestWithCtx(ctx context.Context) (*http.Request, error) {
+func (r request) toHttpRequestWithCtx(ctx context.Context) (*http.Request, error) {
 
 	req, err := http.NewRequestWithContext(ctx, r.method, r.makeUrl(), nil)
 	if err != nil {

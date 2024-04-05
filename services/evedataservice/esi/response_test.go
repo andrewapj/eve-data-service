@@ -94,3 +94,18 @@ func buildTestHttpResponse() *http.Response {
 		Body: io.NopCloser(bytes.NewReader([]byte("{}"))),
 	}
 }
+
+func BenchmarkNewResponse(b *testing.B) {
+
+	testhelper.SetTestConfig()
+
+	for i := 0; i < b.N; i++ {
+		httpResponse := buildTestHttpResponse()
+		_, err := newResponse(httpResponse)
+		if err != nil {
+			b.Fatal(err.Error())
+		}
+	}
+
+	b.ReportAllocs()
+}

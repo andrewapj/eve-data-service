@@ -24,7 +24,7 @@ tasks:
       - task: vet
       - task: docker-up
       - defer: { task: docker-down }
-      - go test -v -coverprofile coverage.out ./... && go tool cover -html coverage.out -o coverage.html
+      - go test -v -race -coverprofile coverage.out ./... && go tool cover -html coverage.out -o coverage.html
   build:
     desc: "builds the application."
     cmds:

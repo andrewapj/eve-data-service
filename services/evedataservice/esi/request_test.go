@@ -21,7 +21,7 @@ func Test_newRequest(t *testing.T) {
 	assert.Equal(t, buildTestRequest(), actual)
 }
 
-func Test_newRequest_InvalidPageDefaultsToPage1(t *testing.T) {
+func Test_newRequest_BuildsRequestWithInvalidPage(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
@@ -29,28 +29,41 @@ func Test_newRequest_InvalidPageDefaultsToPage1(t *testing.T) {
 	assert.Equal(t, actual.page, 0)
 }
 
-func Test_makeUrl_WithEmptyPage(t *testing.T) {
+func Test_url_WithEmptyPage(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"}, 0)
 
-	actual := r.makeUrl()
+	actual := r.url()
 	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en"
 
 	assert.Equal(t, expected, actual)
 }
 
-func Test_makeUrl_WithPage(t *testing.T) {
+func Test_url_WithPage(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"}, 1)
 
-	actual := r.makeUrl()
+	actual := r.url()
 	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en&page=1"
+
+	assert.Equal(t, expected, actual)
+}
+
+func Test_path_WithParams(t *testing.T) {
+
+	testhelper.SetTestConfig()
+
+	r := newRequest("/path/{param1}/path2/{param2}/",
+		map[string]string{"param1": "value1", "param2": "value2"}, 1)
+
+	actual := r.pathWithParams()
+	expected := "/path/value1/path2/value2/"
 
 	assert.Equal(t, expected, actual)
 }

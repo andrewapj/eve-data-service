@@ -11,21 +11,16 @@ import (
 	"time"
 )
 
+// response represents a response from the ESI.
 type response struct {
-	body          []byte
-	contentLength int
-	expires       time.Time
-	pages         int
-	statusCode    int
+	body       []byte
+	expires    time.Time
+	pages      int
+	statusCode int
 }
 
 // newResponse builds a new response.
 func newResponse(resp *http.Response) (*response, error) {
-
-	contentLength, err := strconv.Atoi(resp.Header.Get(config.EsiHeaderContentLength()))
-	if err != nil {
-		contentLength = 0
-	}
 
 	expires := resp.Header.Get(config.EsiHeaderExpiresKey())
 
@@ -37,12 +32,11 @@ func newResponse(resp *http.Response) (*response, error) {
 	buff := new(bytes.Buffer)
 	_, err = io.Copy(buff, resp.Body)
 	if err != nil {
-		return &response{}, fmt.Errorf("unable to build response. %w", err)
+		return &response{}, fmt.Errorf("unable to build responses. %w", err)
 	}
 
 	return &response{
-		body:          buff.Bytes(),
-		contentLength: contentLength,
+		body: buff.Bytes(),
 		expires: clock.ParseWithDefault(
 			config.EsiDateLayout(),
 			expires,
@@ -50,4 +44,12 @@ func newResponse(resp *http.Response) (*response, error) {
 		pages:      pages,
 		statusCode: resp.StatusCode,
 	}, nil
+}
+
+// isError checks if the http response is an error.
+func (r *response) isError() bool {
+	if r.statusCode >= http.StatusBadRequest && r.statusCode <= http.StatusNetworkAuthenticationRequired {
+		return true
+	}
+	return false
 }

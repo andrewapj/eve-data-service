@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// request represents a request made to the ESI.
 type request struct {
 	headers    map[string][]string
 	method     string
@@ -45,26 +46,35 @@ func newRequest(path string, pathParams map[string]string, page int) request {
 	}
 }
 
-// makeUrl generates a full URL from a request.
-func (r request) makeUrl() string {
+// url generates a full URL from a request including query string parameters.
+func (r request) url() string {
 
 	url := fmt.Sprintf("%s://%s%s?datasource=%s&language=%s",
-		r.protocol, r.domain, r.path, r.datasource, r.language)
+		r.protocol, r.domain, r.pathWithParams(), r.datasource, r.language)
 	if r.page > 0 {
 		url += fmt.Sprintf("&page=%d", r.page)
-	}
-
-	for param, val := range r.pathParams {
-		param = fmt.Sprintf("{%s}", param)
-		url = strings.ReplaceAll(url, param, val)
 	}
 
 	return url
 }
 
+// pathWithParams generates a path with the path parameters included.
+func (r request) pathWithParams() string {
+
+	path := r.path
+
+	for param, val := range r.pathParams {
+		param = fmt.Sprintf("{%s}", param)
+		path = strings.ReplaceAll(path, param, val)
+	}
+
+	return path
+}
+
+// toHttpRequestWithCtx maps a request to a http.Request. It includes a context in the http.Request.
 func (r request) toHttpRequestWithCtx(ctx context.Context) (*http.Request, error) {
 
-	req, err := http.NewRequestWithContext(ctx, r.method, r.makeUrl(), nil)
+	req, err := http.NewRequestWithContext(ctx, r.method, r.url(), nil)
 	if err != nil {
 		return &http.Request{}, err
 	}

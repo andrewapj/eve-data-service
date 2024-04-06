@@ -30,6 +30,10 @@ tasks:
     cmds:
       - task: test
       - go build main.go
+  escape-build:
+    desc: "runs an escape analysis on the Go source"
+    cmds:
+      - go build -gcflags "-m" ./...
   run:
     desc: "runs the application."
     cmds:

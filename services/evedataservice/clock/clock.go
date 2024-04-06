@@ -7,10 +7,9 @@ func ParseWithDefault(layout string, input string, defaultVal time.Time) time.Ti
 
 	val, err := time.ParseInLocation(layout, input, time.UTC)
 	if err != nil {
-		return defaultVal
-	} else {
-		return val
+		return defaultVal.UTC()
 	}
+	return val.UTC()
 }
 
 // GetTime gets the current time in UTC.

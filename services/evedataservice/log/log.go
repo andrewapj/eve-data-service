@@ -26,6 +26,7 @@ func Configure() {
 	}
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slogLevel}))
-	logger.Info("created logger with level: " + slogLevel.String())
+	//goland:noinspection GoDfaNilDereference
+	logger.Info("created logger", slog.String("level", slogLevel.String()))
 	slog.SetDefault(logger)
 }

@@ -4,15 +4,20 @@ import (
 	"github.com/andrewapj/dotenvconfig"
 	"io/fs"
 	"os"
-	"time"
+	"sync"
 )
 
 const (
 	defaultConfigPath = "local.env"
 )
 
+var mutex sync.Mutex
+
 // Load loads the config for the application.
 func Load(fSys fs.FS) {
+
+	mutex.Lock()
+	defer mutex.Unlock()
 
 	path, ok := os.LookupEnv(ConfigPathKey())
 	if !ok {
@@ -27,7 +32,4 @@ func Load(fSys fs.FS) {
 	if err != nil {
 		panic(err.Error())
 	}
-
-	// Ensure the application runs in UTC
-	time.Local = time.UTC
 }

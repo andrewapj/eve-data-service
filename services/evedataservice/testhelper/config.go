@@ -5,13 +5,13 @@ import (
 	"github.com/andrewapj/arcturus/config"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 const testConfigFile = "local-test.env"
 
 // SetTestConfig sets the config for tests.
 func SetTestConfig() {
+
 	dir, err := GetRootDir()
 	if err != nil {
 		panic(err.Error())
@@ -21,10 +21,8 @@ func SetTestConfig() {
 	if err != nil {
 		panic(err.Error())
 	}
-	config.Load(os.DirFS(dir))
 
-	// Ensure the application runs in UTC
-	time.Local = time.UTC
+	config.Load(os.DirFS(dir))
 }
 
 // GetRootDir finds the root application path where 'main.go' is located.

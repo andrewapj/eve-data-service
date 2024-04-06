@@ -27,11 +27,11 @@ func EsiDateLayout() string {
 }
 
 func EsiDomain() string {
-	return dotenvconfig.GetKeyMust("ESI_DOMAIN")
+	return dotenvconfig.GetKeyMust(EsiDomainKey())
 }
 
-func EsiHeaderContentLength() string {
-	return dotenvconfig.GetKeyMust("ESI_HEADER_CONTENT_LENGTH_KEY")
+func EsiDomainKey() string {
+	return "ESI_DOMAIN"
 }
 
 func EsiHeaderExpiresKey() string {
@@ -47,7 +47,11 @@ func EsiLanguage() string {
 }
 
 func EsiProtocol() string {
-	return dotenvconfig.GetKeyMust("ESI_PROTOCOL")
+	return dotenvconfig.GetKeyMust(EsiProtocolKey())
+}
+
+func EsiProtocolKey() string {
+	return "ESI_PROTOCOL"
 }
 
 func EsiTimeout() int {

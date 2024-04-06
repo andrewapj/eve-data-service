@@ -13,11 +13,11 @@ import (
 	"time"
 )
 
-func Test_newResponse(t *testing.T) {
+func Test_newResponse_BuildsResponse(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
-	expected := buildTestResponse(t)
+	expected := buildTestResponse()
 
 	actual, err := newResponse(buildTestHttpResponse())
 	require.Nil(t, err, "unexpected error")
@@ -25,7 +25,7 @@ func Test_newResponse(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func Test_newResponse_DefaultsSetWithMissingHeaders(t *testing.T) {
+func Test_newResponse_BuildsResponseWithMissingHeaders(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
@@ -35,47 +35,52 @@ func Test_newResponse_DefaultsSetWithMissingHeaders(t *testing.T) {
 	actual, err := newResponse(httpResponse)
 	require.Nil(t, err)
 
-	assert.Equal(t, 0, actual.contentLength)
-
 	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
 	assert.Equal(t, 1, actual.pages)
 }
 
-func Test_newResponse_DefaultsSetWithEmptyHeaders(t *testing.T) {
+func Test_newResponse_BuildsResponseWithEmptyHeaders(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
 	httpResponse := buildTestHttpResponse()
-	httpResponse.Header[config.EsiHeaderContentLength()] = []string{""}
 	httpResponse.Header[config.EsiHeaderExpiresKey()] = []string{""}
 	httpResponse.Header[config.EsiHeaderPagesKey()] = []string{""}
 
 	actual, err := newResponse(httpResponse)
 	require.Nil(t, err)
 
-	assert.Equal(t, 0, actual.contentLength)
-
 	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
 	assert.Equal(t, 1, actual.pages)
 }
 
-func buildTestResponse(t *testing.T) *response {
+func Test_response_isError(t *testing.T) {
 
-	date, err := time.ParseInLocation(config.EsiDateLayout(), "Sun, 31 Mar 2024 11:05:00 GMT", time.UTC)
-	if err != nil {
-		assert.Fail(t, "unable to generate time")
-	}
+	testhelper.SetTestConfig()
 
+	assert.False(t, buildTestResponse().isError())
+
+	resp := buildTestResponse()
+	resp.statusCode = http.StatusBadRequest
+	assert.True(t, resp.isError())
+
+	resp = buildTestResponse()
+	resp.statusCode = http.StatusGatewayTimeout
+	assert.True(t, resp.isError())
+}
+
+func buildTestResponse() *response {
+
+	date := clock.ParseWithDefault(config.EsiDateLayout(), "Sun, 31 Mar 2024 11:05:00 GMT", clock.GetTime())
 	return &response{
-		body:          []byte("{}"),
-		contentLength: 2,
-		expires:       date,
-		pages:         5,
-		statusCode:    200,
+		body:       []byte("{}"),
+		expires:    date,
+		pages:      5,
+		statusCode: 200,
 	}
 }
 
@@ -87,9 +92,8 @@ func buildTestHttpResponse() *http.Response {
 		ProtoMajor: 2,
 		ProtoMinor: 0,
 		Header: map[string][]string{
-			config.EsiHeaderExpiresKey():    {"Sun, 31 Mar 2024 11:05:00 GMT"},
-			config.EsiHeaderPagesKey():      {"5"},
-			config.EsiHeaderContentLength(): {"2"},
+			config.EsiHeaderExpiresKey(): {"Sun, 31 Mar 2024 11:05:00 GMT"},
+			config.EsiHeaderPagesKey():   {"5"},
 		},
 		Body: io.NopCloser(bytes.NewReader([]byte("{}"))),
 	}

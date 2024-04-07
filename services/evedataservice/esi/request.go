@@ -22,11 +22,7 @@ type request struct {
 }
 
 // newRequest builds a new request struct.
-func newRequest(path string, pathParams map[string]string, page int) request {
-
-	if page < 0 {
-		page = 0
-	}
+func newRequest(path string, pathParams map[string]string) request {
 
 	return request{
 		headers: map[string][]string{
@@ -42,8 +38,16 @@ func newRequest(path string, pathParams map[string]string, page int) request {
 		pathParams: pathParams,
 		datasource: config.EsiDatasource(),
 		language:   config.EsiLanguage(),
-		page:       page,
+		page:       0,
 	}
+}
+
+func (r request) withPage(page int) request {
+	if page < 0 {
+		page = 0
+	}
+	r.page = page
+	return r
 }
 
 // url generates a full URL from a request including query string parameters.

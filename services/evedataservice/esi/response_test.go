@@ -20,8 +20,7 @@ func Test_newResponse_BuildsResponse(t *testing.T) {
 	expected := buildTestResponse()
 
 	actual, err := newResponse(buildTestHttpResponse())
-	require.Nil(t, err, "unexpected error")
-
+	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
 
@@ -33,7 +32,7 @@ func Test_newResponse_BuildsResponseWithMissingHeaders(t *testing.T) {
 	httpResponse.Header = map[string][]string{}
 
 	actual, err := newResponse(httpResponse)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
@@ -50,7 +49,7 @@ func Test_newResponse_BuildsResponseWithEmptyHeaders(t *testing.T) {
 	httpResponse.Header[config.EsiHeaderPagesKey()] = []string{""}
 
 	actual, err := newResponse(httpResponse)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())

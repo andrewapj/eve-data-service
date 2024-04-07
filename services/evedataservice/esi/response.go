@@ -25,7 +25,7 @@ func newResponse(resp *http.Response) (*response, error) {
 	expires := resp.Header.Get(config.EsiHeaderExpiresKey())
 
 	pages, err := strconv.Atoi(resp.Header.Get(config.EsiHeaderPagesKey()))
-	if err != nil {
+	if err != nil || pages == 0 {
 		pages = 1
 	}
 

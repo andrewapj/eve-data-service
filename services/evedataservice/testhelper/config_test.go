@@ -17,6 +17,6 @@ func Test_SetTestConfig(t *testing.T) {
 func Test_GetRootDir(t *testing.T) {
 
 	dir, err := GetRootDir()
-	require.Nil(t, err, "unexpected error")
+	require.NoError(t, err)
 	require.NotEmpty(t, dir, "unexpected empty value")
 }

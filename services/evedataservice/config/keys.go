@@ -46,6 +46,10 @@ func EsiLanguage() string {
 	return dotenvconfig.GetKeyMust("ESI_LANGUAGE")
 }
 
+func EsiMaxRetries() int {
+	return dotenvconfig.GetKeyAsIntMust("ESI_MAX_RETRIES")
+}
+
 func EsiProtocol() string {
 	return dotenvconfig.GetKeyMust(EsiProtocolKey())
 }

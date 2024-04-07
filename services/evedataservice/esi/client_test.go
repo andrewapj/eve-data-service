@@ -9,12 +9,105 @@ import (
 	"testing"
 )
 
+func TestClient_getPages_WithMissingPageInRequest(t *testing.T) {
+
+	testhelper.SetTestConfig()
+	startMockServer()
+	defer stopMockServer()
+
+	client := NewClient()
+
+	pageReq := NewPageRequest(0, 5)
+	resp, err := client.getPages(context.Background(), esiTypeIdsRequest(), pageReq)
+	require.NoError(t, err)
+
+	require.Equal(t, 1, len(resp))
+	assert.Equal(t, &response{
+		body:       []byte(esiTypeIdsPage1Response),
+		expires:    esiExpiresTime,
+		pages:      2,
+		statusCode: 200}, resp[0])
+}
+
+func TestClient_getPages_WithPage1Only(t *testing.T) {
+
+	testhelper.SetTestConfig()
+	startMockServer()
+	defer stopMockServer()
+
+	client := NewClient()
+
+	pageReq := NewPageRequest(1, 1)
+	resp, err := client.getPages(context.Background(), esiTypeIdsRequest(), pageReq)
+	require.NoError(t, err)
+
+	require.Equal(t, 1, len(resp))
+	assert.Equal(t, &response{
+		body:       []byte(esiTypeIdsPage1Response),
+		expires:    esiExpiresTime,
+		pages:      2,
+		statusCode: 200}, resp[0])
+}
+
+func TestClient_getPages_WithMultiplePages_DoesNotExceedMaxPages(t *testing.T) {
+
+	testhelper.SetTestConfig()
+	startMockServer()
+	defer stopMockServer()
+
+	client := NewClient()
+
+	// Generate a page request for 10 pages. The client should not request pages that do not exist.
+	pageReq := NewPageRequest(1, 10)
+	resp, err := client.getPages(context.Background(), esiTypeIdsRequest(), pageReq)
+	require.NoError(t, err)
+
+	require.Equal(t, 2, len(resp))
+	assert.Equal(t, &response{
+		body:       []byte(esiTypeIdsPage1Response),
+		expires:    esiExpiresTime,
+		pages:      2,
+		statusCode: 200}, resp[0])
+	assert.Equal(t, &response{
+		body:       []byte(esiTypeIdsPage2Response),
+		expires:    esiExpiresTime,
+		pages:      2,
+		statusCode: 200}, resp[1])
+}
+
+func TestClient_retryRequest(t *testing.T) {
+	testhelper.SetTestConfig()
+	startMockServer()
+	defer stopMockServer()
+
+	client := NewClient()
+
+	resp, err := client.retryRequest(context.Background(), esiStatusRequest())
+
+	require.NoError(t, err)
+	assert.Equal(t, 200, resp.statusCode)
+}
+
+func TestClient_retryRequest_WithErr(t *testing.T) {
+	testhelper.SetTestConfig()
+	startMockServer()
+	defer stopMockServer()
+
+	client := NewClient()
+	req := esiStatusRequest()
+	req.page = 2
+
+	resp, err := client.retryRequest(context.Background(), req)
+	require.NotNil(t, err)
+	require.Nil(t, resp)
+}
+
 func TestClient_makeRequest(t *testing.T) {
 	testhelper.SetTestConfig()
-	startMockServer(t)
-	defer stopMockServer(t)
+	startMockServer()
+	defer stopMockServer()
 
-	requestWithoutUserAgent := newRequest(esiStatusPath, map[string]string{}, 0)
+	requestWithoutUserAgent := esiStatusRequest()
 	requestWithoutUserAgent.headers["User-Agent"] = []string{}
 
 	type args struct {
@@ -31,12 +124,12 @@ func TestClient_makeRequest(t *testing.T) {
 			name: "should make valid request",
 			args: args{
 				ctx: context.Background(),
-				r:   newRequest(esiStatusPath, map[string]string{}, 0),
+				r:   esiStatusRequest(),
 			},
 			want: &response{
 				body:       []byte(esiStatusResponse),
-				expires:    esiRequestTime,
-				pages:      0,
+				expires:    esiExpiresTime,
+				pages:      1,
 				statusCode: 200,
 			},
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
@@ -47,9 +140,9 @@ func TestClient_makeRequest(t *testing.T) {
 			name: "should get a 404 for a missing page",
 			args: args{
 				ctx: context.Background(),
-				r:   newRequest(esiStatusPath, map[string]string{}, 2),
+				r:   esiStatusRequest().withPage(2),
 			},
-			want: &response{},
+			want: nil,
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
 				return assert.NotNilf(t, err, "expected an error with a 404 response")
 			},
@@ -60,7 +153,7 @@ func TestClient_makeRequest(t *testing.T) {
 				ctx: context.Background(),
 				r:   requestWithoutUserAgent,
 			},
-			want: &response{},
+			want: nil,
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
 				return assert.NotNilf(t, err, "expected an error with a missing user agent header")
 			},
@@ -81,14 +174,14 @@ func TestClient_makeRequest(t *testing.T) {
 func TestClient_makeRequest_WithCtxCancel(t *testing.T) {
 
 	testhelper.SetTestConfig()
-	startMockServer(t)
-	defer stopMockServer(t)
+	startMockServer()
+	defer stopMockServer()
 
 	esi := NewClient()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	cancel()
 
-	_, err := esi.makeRequest(ctx, newRequest(esiStatusPath, map[string]string{}, 0))
+	_, err := esi.makeRequest(ctx, esiStatusRequest())
 	require.NotNilf(t, err, "expected an err with a cancelled context")
 }

@@ -16,25 +16,17 @@ func Test_newRequest(t *testing.T) {
 	testhelper.SetTestConfig()
 
 	actual := newRequest("/path/{param1}/path2/{param2}/",
-		map[string]string{"param1": "value1", "param2": "value2"}, 5)
+		map[string]string{"param1": "value1", "param2": "value2"})
 
 	assert.Equal(t, buildTestRequest(), actual)
 }
 
-func Test_newRequest_BuildsRequestWithInvalidPage(t *testing.T) {
-
-	testhelper.SetTestConfig()
-
-	actual := newRequest("", map[string]string{}, -1)
-	assert.Equal(t, actual.page, 0)
-}
-
-func Test_url_WithEmptyPage(t *testing.T) {
+func Test_url_WithZeroPage(t *testing.T) {
 
 	testhelper.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
-		map[string]string{"param1": "value1", "param2": "value2"}, 0)
+		map[string]string{"param1": "value1", "param2": "value2"})
 
 	actual := r.url()
 	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en"
@@ -47,7 +39,7 @@ func Test_url_WithPage(t *testing.T) {
 	testhelper.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
-		map[string]string{"param1": "value1", "param2": "value2"}, 1)
+		map[string]string{"param1": "value1", "param2": "value2"}).withPage(1)
 
 	actual := r.url()
 	expected := config.EsiProtocol() + "://" + config.EsiDomain() + "/path/value1/path2/value2/?datasource=tranquility&language=en&page=1"
@@ -60,7 +52,7 @@ func Test_path_WithParams(t *testing.T) {
 	testhelper.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
-		map[string]string{"param1": "value1", "param2": "value2"}, 1)
+		map[string]string{"param1": "value1", "param2": "value2"})
 
 	actual := r.pathWithParams()
 	expected := "/path/value1/path2/value2/"
@@ -81,7 +73,7 @@ func Test_toHttpRequestWithCtx(t *testing.T) {
 			"?datasource=" + config.EsiDatasource() +
 			"&language=" + config.EsiLanguage() +
 			"&page=5")
-	require.Nilf(t, err, "unexpected err: %v", err)
+	require.NoError(t, err, "unexpected err: %v", err)
 	expected := &http.Request{
 		Method:     "GET",
 		URL:        expectedUrl,
@@ -99,11 +91,10 @@ func Test_toHttpRequestWithCtx(t *testing.T) {
 	expected = expected.WithContext(ctx)
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
-		map[string]string{"param1": "value1", "param2": "value2"}, 5)
+		map[string]string{"param1": "value1", "param2": "value2"}).withPage(5)
 
 	actual, err := r.toHttpRequestWithCtx(ctx)
-	require.Nilf(t, err, "unexpected err: %v", err)
-
+	require.NoError(t, err, "unexpected err: %v", err)
 	assert.Equal(t, expected, actual)
 }
 
@@ -123,6 +114,6 @@ func buildTestRequest() request {
 		pathParams: map[string]string{"param1": "value1", "param2": "value2"},
 		datasource: config.EsiDatasource(),
 		language:   config.EsiLanguage(),
-		page:       5,
+		page:       0,
 	}
 }

@@ -1,12 +1,5 @@
 package esi
 
-import (
-	"github.com/andrewapj/arcturus/clock"
-	"time"
-)
-
-var esiRequestTime = clock.GetTime().Add(5 * time.Minute).Truncate(time.Second)
-
 const (
 	esiStatusResponse = `
 {

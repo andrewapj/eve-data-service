@@ -1,20 +1,21 @@
 package esi
 
 import (
+	"github.com/andrewapj/arcturus/clock"
 	"github.com/andrewapj/arcturus/config"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
-	"testing"
+	"time"
 )
 
 var (
-	mutex  sync.Mutex
-	server *httptest.Server
+	mutex          sync.Mutex
+	server         *httptest.Server
+	esiExpiresTime = clock.GetTime().Add(5 * time.Minute).Truncate(time.Second)
 )
 
 // mockRequestResponses represents a mocked request and the possible responses it can return.
@@ -25,7 +26,7 @@ type mockRequestResponses struct {
 }
 
 // start starts the server and configures it.
-func startMockServer(t *testing.T) {
+func startMockServer() {
 
 	mutex.Lock()
 
@@ -33,7 +34,9 @@ func startMockServer(t *testing.T) {
 	server = httptest.NewServer(mux)
 
 	err := os.Setenv(config.EsiDomainKey(), strings.Replace(server.URL, "http://", "", 1))
-	require.Nilf(t, err, "unable to start server. %v", err)
+	if err != nil {
+		panic(err)
+	}
 
 	mockReqRes := buildMockRequestResponses()
 	for _, mock := range mockReqRes {
@@ -47,17 +50,19 @@ func startMockServer(t *testing.T) {
 
 			_, err := w.Write(resp.body)
 			if err != nil {
-				t.Fatalf("unable to write responses body for mock request, %s", err.Error())
+				panic(err.Error())
 			}
 		})
 	}
 }
 
 // stop stops the server.
-func stopMockServer(t *testing.T) {
+func stopMockServer() {
 
 	err := os.Unsetenv(config.EsiDomainKey())
-	require.Nilf(t, err, "unable to stop server. %v", err)
+	if err != nil {
+		panic(err.Error())
+	}
 	server.CloseClientConnections()
 	mutex.Unlock()
 }
@@ -71,15 +76,42 @@ func buildMockRequestResponses() []mockRequestResponses {
 				if !strings.Contains(r.RequestURI, "page=") {
 					return response{
 						body:       []byte(esiStatusResponse),
-						expires:    esiRequestTime,
+						expires:    esiExpiresTime,
 						pages:      0,
 						statusCode: 200,
 					}
 				}
 				return response{
 					body:       []byte(esiStatusResponse),
-					expires:    esiRequestTime,
+					expires:    esiExpiresTime,
 					pages:      0,
+					statusCode: 404,
+				}
+			},
+		},
+		{
+			request: esiTypeIdsRequest(),
+			response: func(r *http.Request) response {
+				if !strings.Contains(r.RequestURI, "page") || strings.Contains(r.RequestURI, "page=1") {
+					return response{
+						body:       []byte(esiTypeIdsPage1Response),
+						expires:    esiExpiresTime,
+						pages:      2,
+						statusCode: 200,
+					}
+				}
+				if strings.Contains(r.RequestURI, "page=2") {
+					return response{
+						body:       []byte(esiTypeIdsPage2Response),
+						expires:    esiExpiresTime,
+						pages:      2,
+						statusCode: 200,
+					}
+				}
+				return response{
+					body:       []byte(esiTypeIdsPage2Response),
+					expires:    esiExpiresTime,
+					pages:      2,
 					statusCode: 404,
 				}
 			},

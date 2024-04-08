@@ -43,7 +43,7 @@ func BenchmarkClient_FetchStatus(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := client.FetchStatus(context.Background())
 		if err != nil {
-			b.Fail()
+			b.Fatal(err.Error())
 		}
 	}
 	b.ReportAllocs()

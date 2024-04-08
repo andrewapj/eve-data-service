@@ -7,9 +7,7 @@ import (
 	"sync"
 )
 
-const (
-	defaultConfigPath = "local.env"
-)
+const defaultConfigPath = "local.env"
 
 var mutex sync.Mutex
 

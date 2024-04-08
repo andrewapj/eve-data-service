@@ -2,9 +2,14 @@ package clock
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
+
+func Test_GetTime(t *testing.T) {
+	assert.Equal(t, time.UTC, GetTime().Location())
+}
 
 func TestParseWithDefault(t *testing.T) {
 	type args struct {
@@ -43,6 +48,24 @@ func TestParseWithDefault(t *testing.T) {
 	}
 }
 
-func Test_GetTime(t *testing.T) {
-	assert.Equal(t, time.UTC, GetTime().Location())
+func TestFindEarliestTime(t *testing.T) {
+
+	_, err := FindEarliestTime(nil)
+	require.Error(t, err)
+
+	_, err = FindEarliestTime([]time.Time{})
+
+	actual, err := FindEarliestTime([]time.Time{
+		time.Date(2024, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, time.Date(2024, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second), actual)
+
+	actual, err = FindEarliestTime([]time.Time{
+		time.Date(2024, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second),
+		time.Date(2023, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second),
+		time.Date(2025, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, time.Date(2023, time.March, 31, 11, 5, 0, 0, time.UTC).Truncate(time.Second), actual)
 }

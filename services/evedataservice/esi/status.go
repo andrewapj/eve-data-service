@@ -20,6 +20,7 @@ func esiStatusRequest() request {
 	return newRequest("/latest/status/", map[string]string{})
 }
 
+// FetchStatus will retrieve a Status from the ESI.
 func (c *Client) FetchStatus(ctx context.Context) (Status, error) {
 
 	resp, err := c.getPages(ctx, esiStatusRequest(), NewPageRequest(0, 1))

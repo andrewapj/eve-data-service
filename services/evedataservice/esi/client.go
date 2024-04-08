@@ -29,6 +29,7 @@ func NewClient() Client {
 	}
 }
 
+// getPages retrieves a resource from the ESI based upon the supplied request and PageRequest.
 func (c *Client) getPages(ctx context.Context, r request, pr PageRequest) ([]*response, error) {
 
 	var responses = make([]*response, 0, len(pr.pages()))
@@ -89,7 +90,7 @@ func (c *Client) makeRequest(ctx context.Context, r request) (*response, error) 
 			slog.Error("unable to close request body. %w", err)
 		}
 	}(resp.Body)
-	slog.Debug("received a response from the esi", slog.String("url", r.url()), slog.Int("code", resp.StatusCode))
+	slog.Debug("received a response from the esi", "url", r.url(), "code", resp.StatusCode)
 
 	res, err := newResponse(resp)
 	if err != nil {

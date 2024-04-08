@@ -19,5 +19,11 @@ func TestClient_FetchIds(t *testing.T) {
 	ids, err := client.FetchTypeIds(context.Background(), NewPageRequest(1, 2))
 	require.NoError(t, err)
 
-	assert.Equal(t, Ids{Ids: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}, ids)
+	assert.Equal(t, Ids{
+		Ids: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		baseEsiModel: baseEsiModel{
+			expires: esiExpiresTime,
+			pages:   2,
+		},
+	}, ids)
 }

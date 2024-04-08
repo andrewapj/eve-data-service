@@ -34,9 +34,7 @@ func EsiDomainKey() string {
 	return "ESI_DOMAIN"
 }
 
-func EsiHeaderExpiresKey() string {
-	return dotenvconfig.GetKeyMust("ESI_HEADER_EXPIRES_KEY")
-}
+func EsiHeaderExpiresKey() string { return dotenvconfig.GetKeyMust("ESI_HEADER_EXPIRES_KEY") }
 
 func EsiHeaderPagesKey() string {
 	return dotenvconfig.GetKeyMust("ESI_HEADER_PAGES_KEY")

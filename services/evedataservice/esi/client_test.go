@@ -98,7 +98,7 @@ func TestClient_retryRequest_WithErr(t *testing.T) {
 	req.page = 2
 
 	resp, err := client.retryRequest(context.Background(), req)
-	require.NotNil(t, err)
+	require.Error(t, err)
 	require.Nil(t, resp)
 }
 
@@ -133,7 +133,7 @@ func TestClient_makeRequest(t *testing.T) {
 				statusCode: 200,
 			},
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.Nil(t, err)
+				return assert.NoError(t, err)
 			},
 		},
 		{
@@ -144,7 +144,7 @@ func TestClient_makeRequest(t *testing.T) {
 			},
 			want: nil,
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.NotNilf(t, err, "expected an error with a 404 response")
+				return assert.Error(t, err, "expected an error with a 404 response")
 			},
 		},
 		{
@@ -155,7 +155,7 @@ func TestClient_makeRequest(t *testing.T) {
 			},
 			want: nil,
 			wantErr: func(t assert.TestingT, err error, i ...interface{}) bool {
-				return assert.NotNilf(t, err, "expected an error with a missing user agent header")
+				return assert.Error(t, err, "expected an error with a missing user agent header")
 			},
 		},
 	}
@@ -183,5 +183,5 @@ func TestClient_makeRequest_WithCtxCancel(t *testing.T) {
 	cancel()
 
 	_, err := esi.makeRequest(ctx, esiStatusRequest())
-	require.NotNilf(t, err, "expected an err with a cancelled context")
+	require.Error(t, err, "expected an err with a cancelled context")
 }

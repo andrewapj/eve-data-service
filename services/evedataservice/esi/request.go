@@ -42,6 +42,7 @@ func newRequest(path string, pathParams map[string]string) request {
 	}
 }
 
+// withPage returns a new request with the supplied page set.
 func (r request) withPage(page int) request {
 	if page < 0 {
 		page = 0

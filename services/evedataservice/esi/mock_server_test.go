@@ -74,46 +74,23 @@ func buildMockRequestResponses() []mockRequestResponses {
 			request: esiStatusRequest(),
 			response: func(r *http.Request) response {
 				if !strings.Contains(r.RequestURI, "page=") {
-					return response{
-						body:       []byte(esiStatusResponse),
-						expires:    esiExpiresTime,
-						pages:      0,
-						statusCode: 200,
-					}
+					return response{body: []byte(esiStatusResponse), expires: esiExpiresTime, pages: 0, statusCode: 200}
 				}
-				return response{
-					body:       []byte(esiStatusResponse),
-					expires:    esiExpiresTime,
-					pages:      0,
-					statusCode: 404,
-				}
+				return response{body: []byte(esiStatusResponse), expires: esiExpiresTime, pages: 0, statusCode: 404}
 			},
 		},
 		{
 			request: esiTypeIdsRequest(),
 			response: func(r *http.Request) response {
 				if !strings.Contains(r.RequestURI, "page") || strings.Contains(r.RequestURI, "page=1") {
-					return response{
-						body:       []byte(esiTypeIdsPage1Response),
-						expires:    esiExpiresTime,
-						pages:      2,
-						statusCode: 200,
-					}
+					return response{body: []byte(esiTypeIdsPage1Response), expires: esiExpiresTime, pages: 2, statusCode: 200}
 				}
 				if strings.Contains(r.RequestURI, "page=2") {
 					return response{
-						body:       []byte(esiTypeIdsPage2Response),
-						expires:    esiExpiresTime,
-						pages:      2,
-						statusCode: 200,
-					}
+						body: []byte(esiTypeIdsPage2Response), expires: esiExpiresTime, pages: 2, statusCode: 200}
 				}
 				return response{
-					body:       []byte(esiTypeIdsPage2Response),
-					expires:    esiExpiresTime,
-					pages:      2,
-					statusCode: 404,
-				}
+					body: []byte(esiTypeIdsPage2Response), expires: esiExpiresTime, pages: 2, statusCode: 404}
 			},
 		},
 	}

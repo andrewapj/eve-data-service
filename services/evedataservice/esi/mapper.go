@@ -1,7 +1,6 @@
 package esi
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/andrewapj/arcturus/clock"
@@ -20,21 +19,15 @@ func mapToIds(resp []*response) (Ids, error) {
 		return Ids{}, fmt.Errorf("mapToIds: expected at least 1 response, got %d", len(resp))
 	}
 
-	buff := new(bytes.Buffer)
 	for i := range resp {
-		_, err := buff.Write(resp[i].body)
-		if err != nil {
-			return Ids{}, fmt.Errorf("error writing to buffer %w", err)
-		}
-
 		var ids []int
-		err = json.NewDecoder(buff).Decode(&ids)
+		err := json.Unmarshal(resp[i].body, &ids)
 		if err != nil {
 			return Ids{}, fmt.Errorf("error decoding from json %w", err)
 		}
+
 		response.Ids = append(response.Ids, ids...)
 		expiries = append(expiries, resp[i].expires)
-		buff.Reset()
 	}
 
 	setMetadata(&response, resp)
@@ -50,13 +43,7 @@ func mapToSingle[T BaseEsiModel](r []*response) (T, error) {
 		return t, fmt.Errorf("mapToSingle: expected 1 response, got %d", len(r))
 	}
 
-	buff := new(bytes.Buffer)
-	_, err := buff.Write(r[0].body)
-	if err != nil {
-		return t, fmt.Errorf("error writing to buffer %w", err)
-	}
-
-	err = json.NewDecoder(buff).Decode(&t)
+	err := json.Unmarshal(r[0].body, &t)
 	if err != nil {
 		return t, fmt.Errorf("error decoding from json %w", err)
 	}

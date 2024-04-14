@@ -2,13 +2,13 @@ package esi
 
 import (
 	"context"
-	"github.com/andrewapj/arcturus/testhelper"
+	"github.com/andrewapj/arcturus/config"
 	"testing"
 )
 
 func BenchmarkClient_FetchStatus(b *testing.B) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 

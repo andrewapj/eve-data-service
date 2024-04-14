@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/andrewapj/arcturus/clock"
 	"github.com/andrewapj/arcturus/config"
-	"github.com/andrewapj/arcturus/testhelper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -15,7 +14,7 @@ import (
 
 func Test_newResponse_BuildsResponse(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	expected := buildTestResponse()
 
@@ -26,7 +25,7 @@ func Test_newResponse_BuildsResponse(t *testing.T) {
 
 func Test_newResponse_BuildsResponseWithMissingHeaders(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	httpResponse := buildTestHttpResponse()
 	httpResponse.Header = map[string][]string{}
@@ -42,7 +41,7 @@ func Test_newResponse_BuildsResponseWithMissingHeaders(t *testing.T) {
 
 func Test_newResponse_BuildsResponseWithEmptyHeaders(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	httpResponse := buildTestHttpResponse()
 	httpResponse.Header[config.EsiHeaderExpiresKey()] = []string{""}
@@ -59,7 +58,7 @@ func Test_newResponse_BuildsResponseWithEmptyHeaders(t *testing.T) {
 
 func Test_response_isError(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	assert.False(t, buildTestResponse().isError())
 

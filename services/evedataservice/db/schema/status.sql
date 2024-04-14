@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS status
+(
+    id   INTEGER PRIMARY KEY,
+    data JSONB NOT NULL
+);

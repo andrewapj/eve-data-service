@@ -3,7 +3,6 @@ package esi
 import (
 	"context"
 	"github.com/andrewapj/arcturus/config"
-	"github.com/andrewapj/arcturus/testhelper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 
 func Test_newRequest(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	actual := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"})
@@ -23,7 +22,7 @@ func Test_newRequest(t *testing.T) {
 
 func Test_url_WithZeroPage(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"})
@@ -36,7 +35,7 @@ func Test_url_WithZeroPage(t *testing.T) {
 
 func Test_url_WithPage(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"}).withPage(1)
@@ -49,7 +48,7 @@ func Test_url_WithPage(t *testing.T) {
 
 func Test_path_WithParams(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	r := newRequest("/path/{param1}/path2/{param2}/",
 		map[string]string{"param1": "value1", "param2": "value2"})
@@ -62,7 +61,7 @@ func Test_path_WithParams(t *testing.T) {
 
 func Test_toHttpRequestWithCtx(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	ctx := context.WithValue(context.Background(), "key", "value")
 	expectedUrl, err := url.Parse(

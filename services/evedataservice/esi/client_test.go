@@ -3,7 +3,7 @@ package esi
 import (
 	"context"
 	"fmt"
-	"github.com/andrewapj/arcturus/testhelper"
+	"github.com/andrewapj/arcturus/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -11,7 +11,7 @@ import (
 
 func TestClient_getPages_WithMissingPageInRequest(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -31,7 +31,7 @@ func TestClient_getPages_WithMissingPageInRequest(t *testing.T) {
 
 func TestClient_getPages_WithPage1Only(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -51,7 +51,7 @@ func TestClient_getPages_WithPage1Only(t *testing.T) {
 
 func TestClient_getPages_WithMultiplePages_DoesNotExceedMaxPages(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -76,7 +76,7 @@ func TestClient_getPages_WithMultiplePages_DoesNotExceedMaxPages(t *testing.T) {
 }
 
 func TestClient_retryRequest(t *testing.T) {
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -89,7 +89,7 @@ func TestClient_retryRequest(t *testing.T) {
 }
 
 func TestClient_retryRequest_WithErr(t *testing.T) {
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -103,7 +103,7 @@ func TestClient_retryRequest_WithErr(t *testing.T) {
 }
 
 func TestClient_makeRequest(t *testing.T) {
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 
@@ -173,7 +173,7 @@ func TestClient_makeRequest(t *testing.T) {
 
 func TestClient_makeRequest_WithCtxCancel(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 

@@ -8,7 +8,7 @@ import (
 
 // Status represents a status received from the ESI.
 type Status struct {
-	Players       uint32    `json:"players"`
+	Players       int       `json:"players"`
 	ServerVersion string    `json:"server_version"`
 	StartTime     time.Time `json:"start_time"`
 	VIP           bool      `json:"vip"`

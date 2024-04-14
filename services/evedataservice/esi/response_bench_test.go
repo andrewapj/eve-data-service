@@ -1,13 +1,13 @@
 package esi
 
 import (
-	"github.com/andrewapj/arcturus/testhelper"
+	"github.com/andrewapj/arcturus/config"
 	"testing"
 )
 
 func BenchmarkNewResponse(b *testing.B) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 
 	for i := 0; i < b.N; i++ {
 		httpResponse := buildTestHttpResponse()

@@ -2,7 +2,7 @@ package esi
 
 import (
 	"context"
-	"github.com/andrewapj/arcturus/testhelper"
+	"github.com/andrewapj/arcturus/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -11,7 +11,7 @@ import (
 
 func TestClient_FetchStatus(t *testing.T) {
 
-	testhelper.SetTestConfig()
+	config.SetTestConfig()
 	startMockServer()
 	defer stopMockServer()
 

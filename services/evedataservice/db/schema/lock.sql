@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS lock
+(
+    name VARCHAR(16) PRIMARY KEY
+);

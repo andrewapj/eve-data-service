@@ -76,7 +76,7 @@ func (c *Client) makeRequest(ctx context.Context, r request) (*response, error) 
 		return nil, fmt.Errorf("unable to build request %s. %w", r.url(), err)
 	}
 
-	if req.Header.Get(config.EsiUserAgent()) == "" {
+	if req.Header.Get(config.EsiHeaderUserAgentKey()) == "" {
 		return nil, fmt.Errorf("unable to make request to %s. Missing user agent header", r.url())
 	}
 

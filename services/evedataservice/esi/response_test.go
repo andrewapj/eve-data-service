@@ -33,7 +33,7 @@ func Test_newResponse_BuildsResponseWithMissingHeaders(t *testing.T) {
 	actual, err := newResponse(httpResponse)
 	require.NoError(t, err)
 
-	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
+	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateDefaultAdditionalTimeSeconds()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
 	assert.Equal(t, 1, actual.pages)
@@ -50,7 +50,7 @@ func Test_newResponse_BuildsResponseWithEmptyHeaders(t *testing.T) {
 	actual, err := newResponse(httpResponse)
 	require.NoError(t, err)
 
-	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
+	defaultFutureTime := actual.expires.Add(time.Duration(config.EsiDateDefaultAdditionalTimeSeconds()) * time.Second)
 	assert.Greater(t, defaultFutureTime, clock.GetTime())
 
 	assert.Equal(t, 1, actual.pages)

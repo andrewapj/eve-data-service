@@ -49,7 +49,7 @@ func connectToDBAndTruncate(t *testing.T, ctx context.Context) {
 	tables := []string{"expiry", "lock", "status"}
 
 	for _, table := range tables {
-		_, err = db.Exec(ctx, "TRUNCATE TABLE "+table)
+		_, err = pool.Exec(ctx, "TRUNCATE TABLE "+table)
 		require.NoError(t, err, "unexpected error truncating the database")
 	}
 }

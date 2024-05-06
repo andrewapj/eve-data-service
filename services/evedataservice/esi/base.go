@@ -2,15 +2,15 @@ package esi
 
 import "time"
 
-// BaseEsiModel represents functionality available to all ESI types.
-type BaseEsiModel interface {
+// EsiModel represents functionality available to all ESI types.
+type EsiModel interface {
 	Expires() time.Time
 	Pages() int
 	SetExpires(expiresAt time.Time)
 	SetPages(pages int)
 }
 
-// baseEsiModel is an implementation of a BaseEsiModel.
+// baseEsiModel is an implementation of a EsiModel.
 type baseEsiModel struct {
 	expires time.Time
 	pages   int

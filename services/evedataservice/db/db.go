@@ -15,16 +15,21 @@ import (
 var schemaFS embed.FS
 
 var (
-	db     *pgxpool.Pool
+	pool   *pgxpool.Pool
 	dbOnce sync.Once
 )
+
+type Entity interface {
+	Id() int
+	Data() (*[]byte, error)
+}
 
 // Connect will connect to the database once. It returns an error if it is unable to connect.
 func Connect(ctx context.Context) error {
 
 	var err error
 	dbOnce.Do(func() {
-		db, err = connect(ctx)
+		pool, err = connect(ctx)
 	})
 
 	return err
@@ -32,7 +37,7 @@ func Connect(ctx context.Context) error {
 
 // Close will close the database connection.
 func Close() {
-	db.Close()
+	pool.Close()
 }
 
 // connect performs the database connection. It returns a pointer to the pool or an error.

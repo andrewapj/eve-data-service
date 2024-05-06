@@ -35,7 +35,7 @@ func mapToIds(resp []*response) (Ids, error) {
 }
 
 // mapToSingle will convert a slice of responses to the target ESI type. It expects only one response.
-func mapToSingle[T BaseEsiModel](r []*response) (T, error) {
+func mapToSingle[T EsiModel](r []*response) (T, error) {
 
 	var t T
 
@@ -53,7 +53,7 @@ func mapToSingle[T BaseEsiModel](r []*response) (T, error) {
 }
 
 // setMetadata will set the metadata for ESI types.
-func setMetadata(b BaseEsiModel, r []*response) {
+func setMetadata(b EsiModel, r []*response) {
 
 	var times []time.Time
 	for i := range r {
@@ -61,7 +61,7 @@ func setMetadata(b BaseEsiModel, r []*response) {
 	}
 	expiry, err := clock.FindEarliestTime(times)
 	if err != nil {
-		expiry = clock.GetTime().Add(time.Duration(config.EsiDateAdditionalTime()) * time.Second)
+		expiry = clock.GetTime().Add(time.Duration(config.EsiDateDefaultAdditionalTimeSeconds()) * time.Second)
 		slog.Error("error finding earliest time when setting esi metadata, set to future default", "err", err, "expiry", expiry)
 	}
 

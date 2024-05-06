@@ -5,6 +5,7 @@ import (
 	"embed"
 	"github.com/andrewapj/arcturus/config"
 	"github.com/andrewapj/arcturus/db"
+	"github.com/andrewapj/arcturus/loader"
 	"github.com/andrewapj/arcturus/log"
 	"log/slog"
 	"os"
@@ -23,6 +24,8 @@ func main() {
 		panic(err.Error())
 	}
 	defer db.Close()
+
+	loader.Start(context.Background())
 
 	slog.Info("application started", "pid", os.Getpid())
 }

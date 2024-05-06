@@ -4,15 +4,15 @@ import "github.com/andrewapj/dotenvconfig"
 
 func ConfigPathKey() string { return "APP_CONFIG_PATH" }
 
-func LogLevel() string { return dotenvconfig.GetKeyMust("LOG_LEVEL") }
-
 func DbUrl() string { return dotenvconfig.GetKeyMust(DbUrlKey()) }
 
 func DbUrlKey() string { return "DB_URL" }
 
 func EsiConcurrency() int { return dotenvconfig.GetKeyAsIntMust("ESI_CONCURRENCY") }
 
-func EsiDateAdditionalTime() int { return dotenvconfig.GetKeyAsIntMust("ESI_DATE_ADDITIONAL_TIME") }
+func EsiDateDefaultAdditionalTimeSeconds() int {
+	return dotenvconfig.GetKeyAsIntMust("ESI_DATE_DEFAULT_ADDITIONAL_TIME_SECONDS")
+}
 
 func EsiDatasource() string { return dotenvconfig.GetKeyMust("ESI_DATASOURCE") }
 
@@ -39,3 +39,7 @@ func EsiProtocolKey() string { return "ESI_PROTOCOL" }
 func EsiTimeout() int { return dotenvconfig.GetKeyAsIntMust("ESI_TIMEOUT") }
 
 func EsiUserAgent() string { return dotenvconfig.GetKeyMust("ESI_USER_AGENT") }
+
+func LoaderIntervalSeconds() int { return dotenvconfig.GetKeyAsIntMust("LOADER_INTERVAL_SECONDS") }
+
+func LogLevel() string { return dotenvconfig.GetKeyMust("LOG_LEVEL") }

@@ -40,7 +40,7 @@ func newResponse(resp *http.Response) (*response, error) {
 		expires: clock.ParseWithDefault(
 			config.EsiDateLayout(),
 			expires,
-			clock.GetTime().Add(time.Duration(config.EsiDateAdditionalTime())*time.Second)),
+			clock.GetTime().Add(time.Duration(config.EsiDateDefaultAdditionalTimeSeconds())*time.Second)),
 		pages:      pages,
 		statusCode: resp.StatusCode,
 	}, nil

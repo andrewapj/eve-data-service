@@ -14,7 +14,7 @@ const (
 // otherwise it returns false.
 func AcquireLock(ctx context.Context, name string) bool {
 
-	tag, err := db.Exec(ctx, acquireLockSql, name)
+	tag, err := pool.Exec(ctx, acquireLockSql, name)
 	if err == nil && tag.RowsAffected() == 1 {
 		return true
 
@@ -26,7 +26,7 @@ func AcquireLock(ctx context.Context, name string) bool {
 // released it returns an error.
 func ReleaseLock(ctx context.Context, name string) error {
 
-	tag, err := db.Exec(ctx, releaseLockSql, name)
+	tag, err := pool.Exec(ctx, releaseLockSql, name)
 	if err != nil {
 		return fmt.Errorf("unable to release lock with name %s. %w", name, err)
 	}

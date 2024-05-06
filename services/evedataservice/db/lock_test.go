@@ -29,7 +29,7 @@ func TestAcquireLock_FailsWithExistingLock(t *testing.T) {
 
 	connectToDBAndTruncate(t, ctx)
 
-	_, err := db.Exec(ctx, "INSERT INTO lock(name) VALUES ($1)", testLockName)
+	_, err := pool.Exec(ctx, "INSERT INTO lock(name) VALUES ($1)", testLockName)
 	require.NoError(t, err)
 
 	assert.Falsef(t, AcquireLock(ctx, testLockName), "should not acquire lock")

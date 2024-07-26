@@ -17,6 +17,12 @@ type Client struct {
 	maxRetries int
 }
 
+// Ids represents a list of ids supplied by the ESI for various kinds of data.
+type Ids struct {
+	Ids []int
+	baseEsiModel
+}
+
 // NewClient builds a new Client.
 func NewClient() Client {
 

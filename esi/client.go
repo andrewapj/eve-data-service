@@ -93,7 +93,7 @@ func (c *Client) makeRequest(ctx context.Context, r request) (*response, error) 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			slog.Error("unable to close request body. %w", err)
+			slog.Error("unable to close request body.", "err", err.Error())
 		}
 	}(resp.Body)
 	slog.Debug("received a response from the esi", "url", r.url(), "code", resp.StatusCode)
